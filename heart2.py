@@ -1,6 +1,6 @@
 import math
 from turtle import *
-shape("turtle")
+shape("turtle")#asdasd#
 
 def hearta(k):
     return 15 *  math.sin(k) ** 3
