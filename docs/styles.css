@@ -54,7 +54,9 @@ body {
 
 .card-wrapper {
     perspective: 2000px;
-    transform: rotate(-90deg);
+    transform: translateY(0) rotate(-90deg);
+    opacity: 0;
+    z-index: -1;
 }
 
 .card {
@@ -68,7 +70,6 @@ body {
     box-shadow: inset 10px 0 20px rgba(0, 0, 0, 0.15);
 }
 
-.envelope:hover .card,
 .envelope.active .card {
     transform: rotateY(-15deg);
     transition-delay: 4000ms;
@@ -85,7 +86,6 @@ body {
     transition: transform 1800ms 0ms ease-out;
 }
 
-.envelope:hover .card-cover,
 .envelope.active .card-cover {
     transform: rotateY(-135deg);
     transition-delay: 5000ms;
@@ -182,17 +182,59 @@ body {
     border-left: 325px solid white;
 }
 
-.envelope:hover .card-wrapper,
-.envelope.active .card-wrapper {
-    animation: show-card 2500ms 1200ms forwards;
+/* Corazón decorativo en el centro del sobre */
+.envelope-heart {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    transform: translate(-50%, -50%);
+    z-index: 0;
 }
 
-.envelope:not(:hover):not(.active) .card-wrapper {
-    animation: hide-card 2500ms forwards;
+.envelope-heart::before,
+.envelope-heart::after {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 40px;
+    background-color: #ff0000;
+    border-radius: 25px 25px 0 0;
+}
+
+.envelope-heart::before {
+    left: 12.5px;
+    transform: rotate(-45deg);
+    transform-origin: 0 100%;
+}
+
+.envelope-heart::after {
+    left: 12.5px;
+    transform: rotate(45deg);
+    transform-origin: 100% 100%;
+}
+
+.envelope.active .card-wrapper {
+    animation: show-card 2500ms 1200ms forwards;
+    opacity: 1;
+}
+
+.envelope.closing .card-wrapper {
+    animation: hide-card 2000ms forwards;
+}
+
+.envelope:not(.active) .card-wrapper {
+    /* No hay animación por defecto, solo estado estático */
 }
 
 /* Keyframes */
 @keyframes show-card {
+    0% {
+        transform: translateY(0) rotate(-90deg);
+        z-index: -1;
+    }
+    
     50% {
         transform: translateY(-75%) rotate(-90deg);
         z-index: -1;
@@ -206,18 +248,21 @@ body {
 
 @keyframes hide-card {
     0% {
+        opacity: 1;
         z-index: 10;
-        transform: rotate(0deg);
+        transform: translateY(0) rotate(0deg);
     }
 
     50% {
+        opacity: 1;
         transform: translateY(-75%) rotate(-90deg);
         z-index: -1;
     }
 
     100% {
+        opacity: 0;
         transform: translateY(0) rotate(-90deg);
-
+        z-index: -1;
     }
 }
 
@@ -257,17 +302,18 @@ body {
     transform-origin: top;
 }
 
-.envelope:hover .envelope-lid-secondary,
 .envelope.active .envelope-lid-secondary {
     transform: rotateX(180deg);
     transition-delay: 400ms;
     animation: open-lid-stacking 1200ms forwards;
-
 }
 
-.envelope:not(:hover):not(.active) .envelope-lid-secondary {
+.envelope.closing .envelope-lid-secondary {
     animation: close-lid-stacking 2000ms forwards;
+}
 
+.envelope:not(.active) .envelope-lid-secondary {
+    /* No hay animación por defecto, solo estado estático */
 }
 
 @keyframes open-lid-stacking {
@@ -300,9 +346,9 @@ body {
     top: 37%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 72px;
-    height: 64px; 
-    background-image: url("heart-seal.png");
+    width: 80px;
+    height: 72px; 
+    background-image: url("https://images.icon-icons.com/317/PNG/512/heart-icon_34407.png");
     background-size: cover; 
     background-repeat: no-repeat;
     z-index: 2;

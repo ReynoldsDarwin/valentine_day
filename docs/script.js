@@ -1,66 +1,52 @@
 const envelope = document.querySelector('.envelope');
 const heartSeal = document.querySelector('.heart-seal');
 const tapMessage = document.querySelector('.tap-message');
-let timeoutId;
 let messageTimeoutId;
 let isOpen = false;
 
-// Función para dispositivos de escritorio (hover)
-envelope.addEventListener('mouseover', () => {
-    clearTimeout(timeoutId);
-    clearTimeout(messageTimeoutId);
-    
-    // Ocultar inmediatamente
-    heartSeal.style.opacity = 0;
-    if (tapMessage) {
-        tapMessage.style.opacity = 0;
-    }
-    isOpen = true;
-});
-
-envelope.addEventListener('mouseout', () => {
-    timeoutId = setTimeout(() => {
-        heartSeal.style.opacity = 1;
-        isOpen = false;
-    }, 1500);
-    
-    // Esperar más tiempo para mostrar el mensaje nuevamente
-    messageTimeoutId = setTimeout(() => {
-        if (tapMessage) {
-            tapMessage.style.opacity = 1;
-        }
-    }, 2500);
-});
-
-// Función para dispositivos táctiles (click/tap)
-envelope.addEventListener('click', () => {
-    clearTimeout(messageTimeoutId);
-    
+// Función para abrir la carta (click solo en el sobre)
+envelope.addEventListener('click', (e) => {
     if (!isOpen) {
+        e.stopPropagation(); // Evita que se propague al document
+        
+        // Abrir carta
         envelope.classList.add('active');
+        envelope.classList.remove('closing');
         heartSeal.style.opacity = 0;
         if (tapMessage) {
             tapMessage.style.opacity = 0;
         }
         isOpen = true;
-    } else {
-        envelope.classList.remove('active');
-        setTimeout(() => {
-            heartSeal.style.opacity = 1;
-            isOpen = false;
-        }, 1500);
+    }
+});
+
+// Función para cerrar la carta (click en cualquier lugar del documento)
+document.addEventListener('click', (e) => {
+    if (isOpen) {
+        clearTimeout(messageTimeoutId);
         
-        // Esperar más tiempo para mostrar el mensaje nuevamente
+        // Cerrar carta
+        envelope.classList.remove('active');
+        envelope.classList.add('closing');
+        
+        // Esperar a que termine la animación de cierre
+        setTimeout(() => {
+            envelope.classList.remove('closing');
+            heartSeal.style.opacity = 1;
+        }, 2000);
+        
         messageTimeoutId = setTimeout(() => {
             if (tapMessage) {
                 tapMessage.style.opacity = 1;
             }
         }, 2500);
+        
+        isOpen = false;
     }
 });
 
 // Transiciones suaves
 heartSeal.style.transition = 'opacity 0.3s ease';
 if (tapMessage) {
-    tapMessage.style.transition = 'opacity 0.5s ease';
+    tapMessage.style.transition = 'opacity 1.2s ease';
 }
